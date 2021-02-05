@@ -228,7 +228,7 @@ class SubscriberImport(models.Model):
 
     def set_size(self, save=True):
         with open(self.file.path, 'r') as csvfile:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            dialect = csv.Sniffer().sniff(csvfile.read(50000))
             csvfile.seek(0)
             reader = csv.reader(csvfile, dialect)
             self.size = sum(1 for row in reader)
