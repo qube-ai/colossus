@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags static i18n %}
+
+{% block title %}{% trans 'Customize design' %}{% endblock %}
+
+{% block stylesheet %}
+  <style>
+    #cssEditor, #htmlEditor {
+      border: 1px solid rgba(0,0,0,.125);
+      min-height: 300px;
+    }
+  </style>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'vendor/jquery.are-you-sure.js' %}"></script>
+  <script src="{% static 'vendor/ace/1.3.3/ace.js' %}"></script>
+  <script>
+    $(function () {
+
+      var $customCssTextarea = $("#id_forms_custom_css");
+      $customCssTextarea.after("<div id='cssEditor'>" +  $customCssTextarea.val() + "</div>");
+      $customCssTextarea.hide();
+
+      var cssEditor = ace.edit("cssEditor");
+      cssEditor.setTheme("ace/theme/clouds");
+      cssEditor.getSession().setOptions({
+        mode: "ace/mode/css",
+        wrap: true,
+        tabSize: 4,
+        useSoftTabs: true
+      });
+
+      cssEditor.on("change", function (e) {
+        $customCssTextarea.val(cssEditor.getValue());
+      });
+
+
+      var $customHeader = $("#id_forms_custom_header");
+      $customHeader.after("<div id='htmlEditor'>" +  $customHeader.html() + "</div>");
+      $customHeader.hide();
+
+      var htmlEditor = ace.edit("htmlEditor");
+      htmlEditor.setTheme("ace/theme/clouds");
+      htmlEditor.getSession().setOptions({
+        mode: "ace/mode/html",
+        wrap: true,
+        tabSize: 2,
+        useSoftTabs: true
+      });
+
+      htmlEditor.on("change", function (e) {
+        $customHeader.val(htmlEditor.getValue());
+      });
+
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscription_forms' mailing_list.pk %}">{% trans 'Subscription Forms' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Customize design' %}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{% trans 'Customize design' %}</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">{% trans 'Save changes' %}</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

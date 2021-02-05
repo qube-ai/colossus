@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ form_template.get_key_display }}{% endblock %}
+
+{% load colossus i18n %}
+
+{% block javascript %}
+  <script>
+    $(function () {
+      $(".js-save-form").click(function () {
+        $("form").submit();
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block main %}
+  <div class="container-fluid">
+    {% include 'includes/messages.html' %}
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:subscription_forms' mailing_list.pk %}">{% trans 'Subscription Forms' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ form_template.get_key_display }}</li>
+      </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex align-items-center">
+        <h6 class="mb-0 mr-3">{% trans 'Forms and response emails' %}</h6>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuFormResponsesEmails" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="{{ subscription_forms|get:form_template.key|get:'icon' }} mr-1"></i>
+            {{ form_template.get_key_display }}
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuFormResponsesEmails">
+            {% for key, options in subscription_forms.items %}
+              {% ifchanged %}<h6 class="dropdown-header">{{ workflows.LABELS|get:options.workflow }}</h6>{% endifchanged %}
+              <a class="dropdown-item{% if form_template.key == key %} active{% endif %}" href="{% url 'lists:edit_form_template' mailing_list.pk key %}">
+                <i class="{{ options.icon }}{% if form_template.key != key %} text-muted{% endif %} mr-1"></i>
+                {{ template_keys.LABELS|get:key }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <nav>
+        <form action="{% url 'lists:reset_form_template' mailing_list.pk form_template.key %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link">{% trans 'Reset defaults' %}</button>
+        </form>
+        <a href="{% url 'lists:customize_design' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Customize base design' %}</a>
+        <button type="button" class="btn btn-success js-save-form">{% trans 'Save changes' %}</button>
+      </nav>
+    </div>
+    {% block content %}
+    {% endblock %}
+  </div>
+{% endblock %}

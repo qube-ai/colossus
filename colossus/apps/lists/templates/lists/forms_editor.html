@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% load colossus i18n %}
+
+{% block content %}
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'lists:subscription_forms' mailing_list.pk %}">{% trans 'Subscription Forms' %}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Forms Editor' %}</li>
+      </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="m-0">
+        {% trans 'Forms Editor' %}
+      </h2>
+      <nav>
+        <a href="{% url 'lists:customize_design' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Customize base design' %}</a>
+      </nav>
+    </div>
+
+    <h6 class="mb-3">
+      {% trans 'Legends:' %}
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <span class="far fa-file-alt mr-1 text-light"></span> {% trans 'Form' %}
+      </span>
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <span class="fas fa-globe mr-1 text-light"></span> {% trans 'Web Page' %}
+      </span>
+      <span class="badge badge-secondary d-inline-flex align-items-center">
+        <span class="far fa-envelope mr-1 text-light"></span> {% trans 'Response Email' %}
+      </span>
+    </h6>
+
+    <div>
+      <div>
+        {% for key, options in subscription_forms.items %}
+          {% ifchanged options.workflow %}
+            </div></div>
+            <div class="card mb-3">
+              <h4 class="card-header">{{ workflows.LABELS|get:options.workflow }}</h4>
+              <div class="list-group list-group-flush">
+          {% endifchanged %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="mr-3">
+                  <i class="{{ options.icon }}" style="font-size:1.4rem;"></i>
+                </div>
+                <div>
+                  <h5 class="mb-1">
+                    <a href="{% url 'lists:edit_form_template' mailing_list.pk key %}">
+                      {{ template_keys.LABELS|get:key }}
+                    </a>
+                  </h5>
+                  <p class="text-muted mb-0">{{ options.description }}</p>
+                </div>
+              </div>
+              <div class="ml-3">
+                <a href="{% url 'lists:edit_form_template' mailing_list.pk key %}" class="btn btn-primary" role="button">{% trans 'Customize' %}</a>
+              </div>
+            </div>
+        {% endfor %}
+      </div>
+    </div>
+
+{% endblock %}

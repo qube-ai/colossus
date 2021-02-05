@@ -1,0 +1,57 @@
+{% extends 'lists/base.html' %}
+
+{% load colossus i18n subscribers %}
+
+{% block innerbreadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Subscribers' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <div class="row">
+      <div class="col-6">
+        <form method="get">
+          <div class="input-group">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search subscribers' %}" aria-label="Search subscribers" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+              {% if query %}
+                <a href="?" class="btn btn-outline-primary" role="button">
+                  {% trans 'Clear' %}
+                </a>
+              {% endif %}
+              <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-6 text-right">
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-primary" role="button">{% trans 'Import subscribers' %}</a>
+        <a href="{% url 'lists:new_subscriber' mailing_list.pk %}" class="btn btn-primary" role="button">{% trans 'Add subscriber' %}</a>
+      </div>
+    </div>
+  </div>
+  <table class="table table-sm table-striped mb-0">
+    <thead class="thead-light">
+      <tr>
+        <th>{% trans 'Email address' %}</th>
+        <th>{% trans 'Status' %}</th>
+        <th>{% trans 'Opens' %}</th>
+        <th>{% trans 'Clicks' %}</th>
+        <th>{% trans 'Date subscribed' %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subscriber in subscribers %}
+        <tr>
+          <td><a href="{% url 'lists:subscriber' mailing_list.pk subscriber.pk %}">{{ subscriber.email }}</a></td>
+          <td>{{ subscriber|status_badge }}</td>
+          <td>{{ subscriber.open_rate|percentage }}%</td>
+          <td>{{ subscriber.click_rate|percentage }}%</td>
+          <td>{{ subscriber.optin_date }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include 'includes/card_footer_paginator.html' %}
+{% endblock %}

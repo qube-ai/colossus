@@ -1,0 +1,14 @@
+{% extends 'subscribers/base.html' %}
+
+{% load crispy_forms_tags i18n %}
+
+{% block content %}
+  <div{% if preview %} class="preview-box"{% endif %}>
+    {{ content|safe }}
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-dark">{% trans 'Unsubscribe' %}</button>
+  </form>
+{% endblock %}

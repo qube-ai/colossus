@@ -1,0 +1,56 @@
+{% extends 'campaigns/base.html' %}
+
+{% load i18n humanize %}
+
+{% block javascript %}
+  <script>
+    $(function () {
+      $("[data-toggle='popover']").popover();
+    });
+  </script>
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Links' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <table class="table table-striped mb-0" style="border-top:0 none;">
+    <thead>
+      <tr>
+        <th style="border-top:0 none;">{% trans 'ID' %}</th>
+        <th style="border-top:0 none;">{% trans 'URL' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Index' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Unique clicks' %}</th>
+        <th style="border-top:0 none;" class="text-right">{% trans 'Total clicks' %}</th>
+        <th style="border-top:0 none;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+        <tr>
+          <td>{{ link.short_uuid }}</td>
+          <td>
+            <a href="{{ link.url }}"
+               rel="noopener nofollow"
+               target="_blank"
+               class="d-inline-block text-truncate"
+               style="max-width:350px;"
+               data-toggle="popover"
+               data-trigger="hover"
+               data-placement="bottom"
+               data-container="body"
+               data-content="{{ link.url }}">{{ link.url }}</a>
+          </td>
+          <td class="text-right">{{ link.index }}</td>
+          <td class="text-right">{{ link.unique_clicks_count|intcomma }}</td>
+          <td class="text-right">{{ link.total_clicks_count|intcomma }}</td>
+          <td class="text-right">
+            <a href="{% url 'campaigns:edit_link' campaign.pk link.pk %}" class="btn btn-primary btn-sm">{% trans 'Edit URL' %}</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

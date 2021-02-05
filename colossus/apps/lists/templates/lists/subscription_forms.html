@@ -1,0 +1,80 @@
+{% extends 'lists/base.html' %}
+
+{% load i18n %}
+
+{% block innerbreadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Subscription Forms' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center py-2">
+        <i data-feather="file-text" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
+        <div>
+          <h4 class="mb-1">
+            <a href="{% url 'lists:forms_editor' mailing_list.pk %}">{% trans 'Forms Editor' %}</a>
+          </h4>
+          <p class="text-muted mb-0">{% trans 'Customize subscription forms and response emails.' %}</p>
+        </div>
+      </div>
+      <a href="{% url 'lists:forms_editor' mailing_list.pk %}" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center py-2">
+        <i data-feather="code" class="text-muted mr-3" stroke-width="1" width="32px" height="32px"></i>
+        <div>
+          <h4 class="mb-1">
+            <a href="#">{% trans 'Embedded Forms' %}</a>
+          </h4>
+          <p class="text-muted mb-0">{% trans 'Create subscription forms that can be embedded on any site.' %}</p>
+        </div>
+      </div>
+      <a href="#" role="button" class="btn btn-primary">{% trans 'Select' %}</a>
+    </li>
+  </ul>
+{% endblock %}
+
+{% block outercontent %}
+  <div class="card mb-3">
+    <h4 class="card-header">
+      {% trans 'List Forms' %}
+    </h4>
+    <div class="card-body">
+      <h5>
+        <a href="{{ sub }}" target="_blank">{% trans 'Subscribe Form' %} <i class="fas fa-external-link-alt align-text-top" style="font-size:60%"></i></a>
+      </h5>
+      <div class="form-group">
+        <label for="subscribe-permalink">
+          {% trans 'Permalink' %}
+        </label>
+        <input type="text" id="subscribe-permalink" class="form-control" value="{{ sub }}" readonly>
+      </div>
+      <div class="form-group">
+        <label for="subscribe-short-url">
+          {% trans 'Short URL' %}
+        </label>
+        <input type="text" id="subscribe-short-url" class="form-control" value="{{ sub_short }}" readonly>
+      </div>
+
+      <hr class="my-4">
+
+      <h5>
+        <a href="{{ unsub }}" target="_blank">{% trans 'Unsubscribe Form' %} <i class="fas fa-external-link-alt align-text-top" style="font-size:60%"></i></a>
+      </h5>
+      <div class="form-group">
+        <label for="unsubscribe-permalink">
+          {% trans 'Permalink' %}
+        </label>
+        <input type="text" id="unsubscribe-permalink" class="form-control" value="{{ unsub }}" readonly>
+      </div>
+      <div class="form-group mb-0">
+        <label for="unsubscribe-short-url">
+          {% trans 'Short URL' %}
+        </label>
+        <input type="text" id="unsubscribe-short-url" class="form-control" value="{{ unsub_short }}" readonly>
+      </div>
+    </div>
+  </div>
+{% endblock %}

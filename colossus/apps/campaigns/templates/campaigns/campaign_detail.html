@@ -1,0 +1,11 @@
+{% extends 'campaigns/base.html' %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item active" aria-current="page">{{ campaign.name }}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    {% include 'campaigns/_campaign_detail.html' %}
+  </div>
+{% endblock %}

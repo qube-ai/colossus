@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load campaigns i18n %}
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      {% block breadcrumb %}
+      {% endblock %}
+    </ol>
+  </nav>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+      <h2 class="mb-0 mr-2">{{ campaign.name }}</h2>
+      <a href="{% url 'campaigns:campaign_edit_name' campaign.pk %}" class="btn btn-sm btn-link" role="button">
+        <span class="fa fa-pencil-alt"></span>
+        {% trans 'Rename' %}
+      </a>
+    </div>
+    {{ campaign|campaign_status_badge }}
+  </div>
+
+  {% block maincontent %}
+    <div class="card mb-3">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link{% if submenu == 'details' %} active{% endif %}" href="{% url 'campaigns:campaign_detail' campaign.pk %}">{% trans 'Details' %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link{% if submenu == 'preview' %} active{% endif %}" href="{% url 'campaigns:campaign_preview' campaign.pk %}">{% trans 'Campaign Preview' %}</a>
+          </li>
+          {% if campaign.track_clicks %}
+            <li class="nav-item">
+              <a class="nav-link{% if submenu == 'links' %} active{% endif %}" href="{% url 'campaigns:campaign_links' campaign.pk %}">{% trans 'Links' %}</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link{% if submenu == 'reports' %} active{% endif %}" href="{% url 'campaigns:campaign_reports' campaign.pk %}">{% trans 'Reports' %}</a>
+          </li>
+        </ul>
+      </div>
+      {% block innercontent %}
+      {% endblock %}
+    </div>
+    {% block outercontent %}
+    {% endblock outercontent %}
+  {% endblock maincontent %}
+{% endblock %}

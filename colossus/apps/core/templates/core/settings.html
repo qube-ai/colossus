@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Settings' %}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Settings' %}</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-4">
+      <div class="card mb-3">
+        <div class="card-header">
+          {% trans 'Personal settings' %}
+        </div>
+        <nav class="list-group list-group-flush">
+          <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">{% trans 'Profile' %}</a>
+          <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">{% trans 'Change password' %}</a>
+        </nav>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          {% trans 'Application settings' %}
+        </div>
+        <nav class="list-group list-group-flush">
+          <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">{% trans 'Site domain' %}</a>
+        </nav>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class="card-body">
+          {% block settingscontent %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

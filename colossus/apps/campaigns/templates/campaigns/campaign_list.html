@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% load colossus campaigns i18n %}
+
+{% block title %}{% trans 'Campaigns' %}{% endblock %}
+
+{% block main %}
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{% trans 'Campaigns' %}</li>
+    </ol>
+  </nav>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">{% trans 'Campaigns' %}</h2>
+    <a href="{% url 'campaigns:campaign_add' %}" class="btn btn-primary" role="button">{% trans 'Create campaign' %}</a>
+  </div>
+  <div class="row">
+    <div class="col-3">
+      <div class="list-group">
+        <a href="?" class="list-group-item list-group-item-action{% if not status %} active{% endif %}">
+          <span class="far fa-clock mr-2"></span>
+          {% trans 'Recent' %}
+        </a>
+        {% for key in campaign_status.FILTERS %}
+          <a href="?{% qs status=key %}" class="list-group-item list-group-item-action{% if status == key %} active{% endif %}">
+            <span class="{{ campaign_status.ICONS|get:key }} mr-2"></span>
+            {{ campaign_status.LABELS|get:key }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-9">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <form method="get">
+                <input type="hidden" name="status" value="{{ status }}">
+                <div class="input-group">
+                  <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="{% trans 'Search campaigns' %}" aria-label="{% trans 'Search campaigns' %}">
+                  <div class="input-group-append">
+                    {% if query %}
+                      <a href="?{% if status %}status={{ status }}{% endif %}" class="btn btn-outline-primary" role="button">
+                        {% trans 'Clear' %}
+                      </a>
+                    {% endif %}
+                    <button class="btn btn-primary" type="submit">{% trans 'Search' %}</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-6">
+            </div>
+          </div>
+        </div>
+        <table class="table table-striped mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th>{% trans 'Campaign' %}</th>
+              <th style="width:15%;">{% trans 'Status' %}</th>
+              <th style="width:15%;">{% trans 'Opens' %}</th>
+              <th style="width:15%;">{% trans 'Clicks' %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for campaign in campaigns %}
+              <tr>
+                <td class="align-middle">
+                  <div class="d-flex align-items-center">
+                    {% if campaign.campaign_type == campaign_types.REGULAR %}
+                    <i data-feather="mail" class="text-muted mr-3"></i>
+                    {% elif campaign.campaign_type == campaign_types.AUTOMATED %}
+                    <i data-feather="repeat" class="text-muted mr-3"></i>
+                    {% elif campaign.campaign_type == campaign_types.AB_TEST %}
+                    <i data-feather="layers" class="text-muted mr-3"></i>
+                    {% endif %}
+                    <div>
+                      <a class="lead d-block" href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a>
+                      <small class="d-block">{{ campaign.get_campaign_type_display }} ・ {{ campaign.mailing_list.name }}</small>
+                      {% if campaign.status == campaign_status.DRAFT %}
+                        <small class="d-block text-muted">Edited <strong>{{ campaign.update_date }}</strong></small>
+                      {% elif campaign.status == campaign_status.SENT %}
+                        <small class="d-block text-muted">Sent on <strong>{{ campaign.send_date }}</strong></small>
+                      {% elif campaign.status == campaign_status.SCHEDULED %}
+                        <small class="d-block text-muted">Scheduled for <strong>{{ campaign.send_date }}</strong></small>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle">{{ campaign|campaign_status_badge }}</td>
+                <td class="align-middle">{{ campaign.open_rate|percentage }}%</td>
+                <td class="align-middle">{{ campaign.click_rate|percentage }}%</td>
+                <td class="align-middle text-right">
+
+                <div class="btn-group">
+                  {% if campaign.can_edit %}
+                    <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-primary">{% trans 'Edit' %}</a>
+                  {% else %}
+                    <a href="{% url 'campaigns:campaign_reports' campaign.pk %}" class="btn btn-outline-primary">{% trans 'View Report' %}</a>
+                  {% endif %}
+                  <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">{% trans 'Toggle Dropdown' %}</span>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'campaigns:replicate_campaign' campaign.pk %}">{% trans 'Replicate' %}</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'campaigns:delete_campaign' campaign.pk %}">{% trans 'Delete campaign' %}</a>
+                  </div>
+                </div>
+
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% include 'includes/card_footer_paginator.html' %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags i18n lists %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'lists:lists' %}">{% trans 'Mailing Lists' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:list' mailing_list.pk %}">{{ mailing_list.name }}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:subscribers' mailing_list.pk %}">{% trans 'Subscribers' %}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'lists:import_subscribers' mailing_list.pk %}">{% trans 'Import Subscribers' %}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">{{ title }}</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success" role="button">{% trans 'Import' %}</button>
+        <a href="{% url 'lists:import_subscribers' mailing_list.pk %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+      </form>
+    </div>
+  </div>
+
+  {% if subscriber_imports %}
+    <div class="card mb-3">
+      <div class="card-header">
+        {% trans 'Last imports' %}
+      </div>
+      <div class="list-group list-group-flush">
+        {% for subscriber_import in subscriber_imports %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'lists:import_preview' mailing_list.pk subscriber_import.pk %}">{{ subscriber_import.file.name }}</a>
+            <small class="text-muted">{{ subscriber_import.upload_date }}</small>
+            {{ subscriber_import|import_status_badge }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

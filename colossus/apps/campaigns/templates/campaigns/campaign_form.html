@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_filters i18n static %}
+
+{% block title %}{% trans 'Create new campaign' %}{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'vendor/tinymce/4.7.13/tinymce.min.js' %}"></script>
+  <script>
+    $(function () {
+      /*{% comment %}
+      vendor/tinymce/tinymce.min.js
+      Initialize the rich text editor to compose email message
+      {% endcomment %}*/
+      tinymce.init({
+        selector: '#id_content',
+        menubar: false,
+        statusbar: false,
+        plugins: 'textcolor lists code link',
+        toolbar: 'undo redo |  formatselect | bold italic backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat | code'
+      });
+
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'campaigns:campaigns' %}">{% trans 'Campaigns' %}</a></li>
+      {% if campaign %}
+        <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_edit' campaign.pk %}">{{ campaign.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% spaceless %}
+          {% if title %}
+            {{ title }}
+          {% else %}
+            {% trans 'Edit campaign' %}
+          {% endif %}
+        {% endspaceless %}</li>
+      {% else %}
+        <li class="breadcrumb-item active" aria-current="page">{% trans 'Create new campaign' %}</li>
+      {% endif %}
+    </ol>
+  </nav>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">
+        {% if campaign %}
+          {% if title %}
+            {{ title }}
+          {% else %}
+            {% trans 'Edit campaign' %}
+          {% endif %}
+        {% else %}
+          {% trans 'Create new campaign' %}
+        {% endif %}
+      </h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% if campaign %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Save changes' %}</button>
+          <a href="{{ campaign.get_absolute_url }}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% else %}
+          <button type="submit" class="btn btn-success" role="button">{% trans 'Create campaign' %}</button>
+          <a href="{% url 'campaigns:campaigns' %}" class="btn btn-outline-secondary" role="button">{% trans 'Never mind' %}</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+{% endblock %}

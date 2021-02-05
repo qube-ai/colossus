@@ -1,0 +1,157 @@
+{% extends 'campaigns/base.html' %}
+
+{% load colossus static i18n l10n humanize %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'vendor/flag-icon/css/flag-icon.min.css' %}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></li>
+  <li class="breadcrumb-item active" aria-current="page">{% trans 'Reports' %}</li>
+{% endblock %}
+
+{% block innercontent %}
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <div class="d-flex justify-content-between">
+          <h5>Open rate</h5>
+          <span>{{ campaign.open_rate|percentage }}%</span>
+        </div>
+        <div class="progress mb-2">
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ campaign.open_rate|percentage|unlocalize }}%"
+               aria-valuenow="{{ campaign.open_rate|percentage|unlocalize }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'List average' %}</span>
+          <span>{{ campaign.mailing_list.open_rate|percentage }}%</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'Unique opens' %}</span>
+          <span>{{ campaign.unique_opens_count|intcomma }}</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'Total opens' %}</span>
+          <span>{{ campaign.total_opens_count|intcomma }}</span>
+        </small>
+      </div>
+      <div class="col">
+        <div class="d-flex justify-content-between">
+          <h5>{% trans 'Click rate' %}</h5>
+          <span>{{ campaign.click_rate|percentage }}%</span>
+        </div>
+        <div class="progress mb-2">
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ campaign.click_rate|percentage|unlocalize }}%"
+               aria-valuenow="{{ campaign.click_rate|percentage|unlocalize }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'List average' %}</span>
+          <span>{{ campaign.mailing_list.click_rate|percentage }}%</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'Unique clicks' %}</span>
+          <span>{{ campaign.unique_clicks_count|intcomma }}</span>
+        </small>
+        <small class="d-flex justify-content-between text-muted">
+          <span>{% trans 'Total clicks' %}</span>
+          <span>{{ campaign.total_clicks_count|intcomma }}</span>
+        </small>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block outercontent %}
+
+  <div class="row mb-3 text-center">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ campaign.unique_opens_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Opened' %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ campaign.unique_clicks_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Clicked' %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="mb-1">{{ unsubscribed_count|intcomma }}</h3>
+          <p class="card-text">{% trans 'Unsubscribed' %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">{% trans 'Top links clicked' %}</h5>
+    <div class="card-body">
+      {% for link in links %}
+        <p class="card-text d-flex justify-content-between">
+          <a href="{{ link.url }}" target="_blank" rel="nofollow noopener" class="text-truncate">{{ link.url }}</a>
+          <span>{{ link.total_clicks_count|intcomma }}</span>
+        </p>
+      {% empty %}
+        <p class="card-text">
+          <em>{% trans 'This campaign had no links.' %}</em>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">
+      {% trans 'Subscribers with most opens' %}
+    </h5>
+    <div class="card-body">
+      {% for activity in subscriber_open_activities %}
+        <p class="card-text d-flex justify-content-between">
+          <a href="{% url 'lists:edit_subscriber' campaign.mailing_list_id activity.subscriber__id %}">{{ activity.subscriber__email }}</a>
+          <span>{{ activity.total_opens|intcomma }}</span>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <h5 class="card-header">
+      {% trans 'Top locations' %}
+    </h5>
+    <div class="card-body">
+      {% for activity in location_open_activities %}
+        <p class="card-text d-flex justify-content-between">
+          <span>
+            {{ activity.location__country__code|flag }}
+            {% if activity.location__country__code %}
+              <a href="{% url 'campaigns:campaign_reports_country' campaign.pk activity.location__country__code %}">{{ activity.location__country__name }}</a>
+            {% else %}
+              {% trans 'Unkown' %}
+            {% endif %}
+          </span>
+          <span>{{ activity.total_opens|intcomma }}</span>
+        </p>
+      {% endfor %}
+    </div>
+    <div class="card-footer">
+      <p class="card-text">
+        <a href="{% url 'campaigns:campaign_reports_locations' campaign.pk %}">{% trans 'View more' %}</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

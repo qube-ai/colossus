@@ -1,0 +1,25 @@
+{% load colossus i18n %}
+
+<div class="list-group list-group-flush" style="width:300px;">
+  {% if notifications %}
+    <div class="list-group-item py-2">
+      <a href="javascript:void(0);" class="js-mark-all-as-read" data-url="{% url 'notifications:mark_all_as_read' %}">{% trans 'Mark all as read' %}</a>
+      ・
+      <a href="javascript:void(0);" class="js-clear-all" data-url="{% url 'notifications:clear_all' %}">{% trans 'Clear all' %}</a>
+    </div>
+    {% for notification in notifications %}
+      <a href="{% url 'notifications:notification_detail' notification.pk %}" class="list-group-item list-group-item-action{% if not notification.is_read %} list-group-item-primary{% endif %}">
+        <p class="mb-0">{{ notification.render }}</p>
+        <small class="text-muted">
+          <span class="{{ Actions.ITEMS|get:notification.action|get:'icon' }} mr-1"></span>
+          {{ notification.date|date:"D d M Y - P" }}
+        </small>
+      </a>
+    {% endfor %}
+    <a href="{% url 'notifications:notifications' %}" class="list-group-item list-group-item-action text-primary text-center py-2">
+      {% trans 'See All' %}
+    </a>
+  {% else %}
+    <div class="list-group-item text-muted text-center">{% trans 'All cleared up!' %}</div>
+  {% endif %}
+</div>

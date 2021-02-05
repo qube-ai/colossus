@@ -1,0 +1,31 @@
+{% load static i18n %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap-4.1.3/css/bootstrap.min.css' %}">
+  <link href="https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911" rel="stylesheet">
+  <title>{% trans 'Forbidden Access' %}</title>
+  <style type="text/css">
+    .logo {
+      font-family: 'Goudy Bookletter 1911', serif;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="logo mt-4">Colossus</h1>
+  <div class="row justify-content-center">
+    <div class="col-sm-8 col-md-6 col-lg-4 text-center">
+      <h1>✋</h1>
+      <h1 class="display-4">403</h1>
+      <p class="lead">{% trans 'Forbidden Access' %}</p>
+      <p>
+        <a href="/">← {% trans 'Return to Colossus' %}</a>
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
