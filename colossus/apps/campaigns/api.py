@@ -2,16 +2,15 @@ import logging
 import re
 from smtplib import SMTPException
 
+import html2text
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import EmailMultiAlternatives, get_connection
+from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-import html2text
-
 from colossus.apps.campaigns.constants import CampaignStatus
 from colossus.apps.subscribers.constants import ActivityTypes
-from colossus.utils import get_absolute_url
+from colossus.utils import get_absolute_url, get_campaign_connection
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +99,7 @@ def send_campaign_email_subscriber(email, subscriber, site, connection=None):
     return send_campaign_email(email, context, subscriber.get_email(), connection)
 
 
-def send_campaign_email_test(email, recipient_list):
+def send_campaign_email_test(email, recipient_list, connection=None):
     if email.campaign.mailing_list is not None:
         unsubscribe_absolute_url = get_absolute_url('subscribers:unsubscribe_manual', kwargs={
             'mailing_list_uuid': email.campaign.mailing_list.uuid
@@ -108,10 +107,12 @@ def send_campaign_email_test(email, recipient_list):
     else:
         unsubscribe_absolute_url = '#'
     context = get_test_email_context(unsub=unsubscribe_absolute_url)
-    return send_campaign_email(email, context, recipient_list, is_test=True)
+    return send_campaign_email(email, context, recipient_list, is_test=True, connection=connection)
 
 
 def send_campaign(campaign):
+    connection = get_campaign_connection(campaign=campaign)
+
     campaign.status = CampaignStatus.DELIVERING
     campaign.save(update_fields=['status'])
     site = get_current_site(request=None)  # get site based on SITE_ID
@@ -122,7 +123,7 @@ def send_campaign(campaign):
     if campaign.track_opens:
         campaign.email.enable_open_tracking()
 
-    with get_connection() as connection:
+    with connection:
         for subscriber in campaign.get_recipients():
             if not subscriber.activities.filter(activity_type=ActivityTypes.SENT, email=campaign.email).exists():
                 sent = send_campaign_email_subscriber(campaign.email, subscriber, site, connection)
