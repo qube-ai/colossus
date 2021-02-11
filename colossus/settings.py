@@ -128,10 +128,10 @@ LOCALE_PATHS = (
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'colossus/static'),
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 
@@ -141,9 +141,9 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/public')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/public')
 
-PRIVATE_MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media/private')
+PRIVATE_MEDIA_ROOT = os.path.join(BASE_DIR, 'media/private')
 
 
 # ==============================================================================
