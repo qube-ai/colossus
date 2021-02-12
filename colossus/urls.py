@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.urls import include, path
+from django.contrib import admin
 
 from colossus.apps.core import views as core_views
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path('', core_views.dashboard, name='dashboard'),
     path('', include('colossus.apps.subscribers.urls', namespace='subscribers')),
     path('setup/', core_views.setup, name='setup'),

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'colossus.apps.lists',
     'colossus.apps.notifications',
     'colossus.apps.subscribers',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
 ]
 
 SITE_ID = 1
@@ -244,3 +246,9 @@ COLOSSUS_HTTPS_ONLY = config('COLOSSUS_HTTPS_ONLY', default=False, cast=bool)
 MAILGUN_API_KEY = config('MAILGUN_API_KEY', default='')
 
 MAILGUN_API_BASE_URL = config('MAILGUN_API_BASE_URL', default='')
+
+ADMIN_URL = "admin/"
+# https://docs.djangoproject.com/en/dev/ref/settings/#admins
+ADMINS = [("""Qube""", "info@getqube.in")]
+# https://docs.djangoproject.com/en/dev/ref/settings/#managers
+MANAGERS = ADMINS
